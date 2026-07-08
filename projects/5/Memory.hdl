@@ -25,5 +25,27 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-	//// Replace this comment with your code.
+	//RAM16k address:   000 0000 0000 0000 to 011 1111 1111 1111
+    //Screen address:   100 0000 0000 0000 to 101 1111 1111 1111
+    //Keyboard address: 110 0000 0000 0000
+
+    DMux(in=load, sel=address[14], a=DM, b=scrnorkbd);
+    
+    //Data Memory
+    RAM16K(in=in, load=DM, address=address[0..13], out=outDM);
+
+    //Select scrn or kbd
+    DMux(in=scrnorkbd, sel= address[13], a=scrn, b=kbd);
+    
+    //8K scrn RAM, two 4k's with address of 13 bits
+    Screen(in=in, load=scrn, address=address[0..12], out=outscrn);
+
+    //16-bit kbd register, read-only cannot use register
+    Keyboard(out=outkbd);
+
+    //Selecting output 
+    Mux16(a=outscrn, b=outkbd, sel=address[13], out=outscrnorkbd);
+    Mux16(a=outDM, b=outscrnorkbd, sel=address[14], out=out);
+
+
 }
