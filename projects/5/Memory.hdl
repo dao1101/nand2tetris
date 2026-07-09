@@ -37,7 +37,7 @@ CHIP Memory {
     //Select scrn or kbd
     DMux(in=scrnorkbd, sel= address[13], a=scrn, b=kbd);
     
-    //8K scrn RAM, two 4k's with address of 13 bits
+    //8K scrn RAM, need an address of 13 bits 2^13=8192
     Screen(in=in, load=scrn, address=address[0..12], out=outscrn);
 
     //16-bit kbd register, read-only cannot use register

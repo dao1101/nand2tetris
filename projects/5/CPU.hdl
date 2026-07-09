@@ -32,5 +32,45 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-	//// Replace this comment with your code.
+
+    // 第一个 Mux16：由最高位决定。0 选指令，1 选 ALU 的计算回传值 (aluOut)
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=outmux1);
+    
+    // A register
+    Not(in=instruction[15], out=isA);
+    Or(a=isA, b=instruction[5], out=loadA);
+    ARegister(in=outmux1, load=loadA, out=outA, out[0..14]=addressM);
+    
+    // D register
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=aluOut, load=loadD, out=outD);
+
+    // Load to M
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // 5. 第二个 Mux16：选择 A 寄存器值 or 外部内存输入 inM
+    Mux16(a=outA, b=inM, sel=instruction[12], out=outmux2);
+    
+    // 6. ALU
+    ALU(x=outD, y=outmux2, 
+        zx=instruction[11], nx=instruction[10], zy=instruction[9], 
+        ny=instruction[8], f=instruction[7], no=instruction[6], 
+        out=outM, out=aluOut, zr=zero, ng=negative);
+
+    // 7. Jumping conditions
+    Or(a=zero, b=negative, out=notpos);
+    Not(in=notpos, out=pos);
+
+    And(a=instruction[2], b=negative, out=jlt);
+    And(a=instruction[1], b=zero, out=jeq);
+    And(a=instruction[0], b=pos, out=jgt);
+
+    Or(a=jlt, b=jeq, out=jle);
+    Or(a=jle, b=jgt, out=jumpToA); 
+
+    And(a=instruction[15], b=jumpToA, out=pcload);
+    Not(in=pcload, out=pcinc);
+
+    // 8. PC 计数器
+    PC(in=outA, load=pcload, inc=pcinc, reset=reset, out[0..14]=pc);
 }
