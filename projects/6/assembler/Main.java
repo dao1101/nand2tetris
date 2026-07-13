@@ -82,8 +82,8 @@ public class Main {
                         symbolTable.addEntry(symbol, nextVariableAddress);
                         nextVariableAddress++;
                     }
-                    binaryLine = "0" + String.format("%15s", Integer.toBinaryString(address))
-                                              .replace(' ', '0');
+                    String bin = Integer.toBinaryString(address);
+                    binaryLine = "0" + "0".repeat(15 - bin.length()) + bin;
                 } else { // C_INSTRUCTION
                     String comp = Code.comp(parser.comp());
                     String dest = Code.dest(parser.dest());

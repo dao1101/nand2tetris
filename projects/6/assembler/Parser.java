@@ -52,12 +52,6 @@ public class Parser {
         currentLine = lines.get(currentIndex);
     }
 
-    /** Resets the parser back to the beginning, for a second pass over the file. */
-    public void reset() {
-        currentIndex = -1;
-        currentLine = null;
-    }
-
     public InstructionType instructionType() {
         if (currentLine.startsWith("@")) {
             return InstructionType.A_INSTRUCTION;
