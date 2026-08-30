@@ -1,5 +1,5 @@
 import java.util.HashMap;
- 
+
 /**
  * Keeps a mapping between symbolic names (labels and variables)
  * and their RAM/ROM addresses.
